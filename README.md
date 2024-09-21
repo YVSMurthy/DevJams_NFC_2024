@@ -53,6 +53,8 @@ In addition to solving a real-world problem for customers, we provide a *data-dr
 - *Business Model*:
   - Retailers can gain insights into customer preferences, buying patterns, and product performance.
   - This information can be sold to *suppliers, distributors, and manufacturers*, providing them with actionable data to optimize their supply chain and sales strategy.
+  - ![image](https://github.com/user-attachments/assets/1fd31a4f-4995-4fac-b700-890272d178fc)
+
 
 By offering *sales analytics, we provide **business value* to the retailers, making our solution attractive not just for customers but also for the businesses involved.
 
