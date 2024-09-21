@@ -1,9 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
 
-const Graphs = ({ lineData }) => {
+const Graphs = ({ lineData, duration }) => {
     const chartRef = useRef(null);
     const chartInstance = useRef(null);
+
+    const label = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct']
+
+    console.log("line data from graph : ", lineData)
 
     useEffect(() => {
         const myChartRef = chartRef.current.getContext('2d');
@@ -15,24 +19,16 @@ const Graphs = ({ lineData }) => {
         chartInstance.current = new Chart(myChartRef, {
             type: 'line',
             data: {
-                labels: lineData.map((_, index) => `Sale ${index + 1}`), // Dynamic labels for each sale
+                labels: label,
                 datasets: [
                     {
                         label: "Sales Price",
-                        data: lineData.map(item => item.sale_price),
+                        data: lineData,
                         fill: false,
                         borderColor: 'rgb(75, 192, 192)',
                         tension: 0.1,
                         borderWidth: 2,
-                    },
-                    {
-                        label: "Quantity Sold",
-                        data: lineData.map(item => item.quantity_sold),
-                        fill: false,
-                        borderColor: 'rgb(153, 102, 255)',
-                        tension: 0.1,
-                        borderWidth: 2,
-                    },
+                    }
                 ],
             },
             options: {

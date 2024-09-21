@@ -7,57 +7,56 @@ import axios from 'axios';
 const backgroundImage = require('../assets/abstract_bg.png');
 
 function Analytics() {
-  const ip = '172.17.50.147'
+  const ip = '172.18.231.72'
   const [genderData, setGenderData] = useState({ labels: ['Male', 'Female'], data: [35, 47] });
   const [memberData, setMemberData] = useState({ labels: ['Customer', 'Employee'], data: [78, 53] });
   const [productData, setProductData] = useState([]);
   const [salesData, setSalesData] = useState([]);
-  const [duration, setDuration] = useState('5m');  
-  const [category, setCategory] = useState('all');  
+  const [duration, setDuration] = useState('5m');
+  const [category, setCategory] = useState('All');
   const [lineData, setLineData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const api = 'http://'+ip+':3001/'
-        const genderResponse = await axios.get(api+'getPieDataGender');
+        const api = 'http://' + ip + ':3001/';
+        const genderResponse = await axios.get(api + 'getPieDataGender');
         setGenderData({ labels: ['Male', 'Female'], data: genderResponse.data });
-
-        const memberResponse = await axios.get(api+'getPieDataCustomerType');
+  
+        const memberResponse = await axios.get(api + 'getPieDataCustomerType');
         setMemberData({ labels: ['Customer', 'Employee'], data: memberResponse.data });
+  
+        const lineResponse = await axios.get(api + 'getSalesProductData');
+        console.log('API Response:', lineResponse.data);  // Log the entire response
+  
+        if (lineResponse.data && lineResponse.data.productData) {
+          setProductData(lineResponse.data.productData);
+        }
+        if (lineResponse.data && lineResponse.data.salesData) {
+          setSalesData(lineResponse.data.salesData);
+        }
+  
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
-
+  
     fetchData();
   }, []);
+  
 
   useEffect(() => {
-    const salesProductData = async () => {
-      try {
-        const api = 'http://'+ip+':3001/'
-        const lineResponse = await axios.get(api+'getSalesProductData');
-        if (lineResponse.productData) {
-          setProductData(lineResponse.productData);
-        }
-        if (lineResponse.salesData) {
-          setSalesData(lineResponse.salesData);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    salesProductData();
-  }, []);
+    if (salesData.length > 0 && productData.length > 0) {
+      console.log("Filter function");
+      filterSalesData();
+    }
+  }, [category, duration, salesData, productData]);
 
   function filterSalesData() {
     const today = new Date();
-
+  
     function filterByDuration(saleDate) {
       const saleDateObj = new Date(saleDate);
-
       if (duration === 'Last 6 months') {
         const sixMonthsAgo = new Date();
         sixMonthsAgo.setMonth(today.getMonth() - 6);
@@ -72,48 +71,45 @@ function Analytics() {
       }
       return true;
     }
-
+  
     function filterByCategory(product) {
       if (category === 'All') {
         return true;
       }
       return product.product_type === category;
     }
-
-    let lineData = [];
-
+  
+    let data = [];
+  
     salesData.forEach((sale) => {
       const product = productData.find((p) => p.product_id === sale.product_id);
-
+  
       if (product && filterByCategory(product) && filterByDuration(sale.sale_date)) {
-        lineData.push({
-          sale_price: sale.sale_price,
-          quantity_sold: sale.quantity_sold,
-        });
+        data.push(
+          sale.sale_price
+        );
       }
     });
-
-    return lineData;
+  
+    console.log("Filtered data:", data);
+    setLineData(data);
   }
-
-  useEffect(() => {
-    // setLineData(filterSalesData());
-    setLineData([35, 46, 23, 45, 35, 46, 56, 53, 63, 54, 52, 64, ])
-  }, [category, duration]);
+  
+  
 
   return (
     <div className="px-5 py-6 w-full h-full">
       <div className="flex flex-row h-[100%] w-[100%] gap-5">
         <Filters setDuration={setDuration} setCategory={setCategory} duration={duration} category={category} />
         <div className="flex flex-col flex-1 w-[80%]">
-        <div className="flex flex-row justify-between h-[20%] w-[100%] rounded-lg p-6" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+          <div className="flex flex-row justify-between h-[20%] w-[100%] rounded-lg p-6" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: "cover", backgroundPosition: "center" }}>
             <ValueBox title="Value 1" value="100" />
             <ValueBox title="Value 2" value="200" />
             <ValueBox title="Value 3" value="300" />
             <ValueBox title="Value 4" value="400" />
           </div>
           <div className="flex flex-row h-[80%] w-full gap-6 mt-4">
-            <Graphs lineData={lineData} />
+            <Graphs lineData={lineData} duration={duration} />
             <div className="flex flex-col justify-between w-[40%] h-full">
               <PieChart chartData={genderData} />
               <PieChart chartData={memberData} />

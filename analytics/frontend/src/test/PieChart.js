@@ -12,12 +12,8 @@ export const PieChart = ({ chartData }) => {
     const labels = chartData?.labels;
     const data = chartData?.data;
 
-    console.log(labels)
-    console.log(data)
-
     if (labels && data) {
       const myChartRef = chartRef.current.getContext('2d');
-      console.log('Rendering chart with data:', labels, data);
 
       chartInstance.current = new Chart(myChartRef, {
         type: 'pie',
