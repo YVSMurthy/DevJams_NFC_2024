@@ -47,7 +47,7 @@ export const PieChart = ({ chartData }) => {
   }, [chartData]);
 
   return (
-    <div className="w-[100%] h-[48%] p-4 border rounded-lg border-gray-300 flex items-center justify-center">
+    <div className="w-[100%] h-[48%] p-4 bg-[#fff] border rounded-lg border-gray-300 flex items-center justify-center">
       <canvas ref={chartRef} className="h-[35%] w-auto" />
     </div>
   );

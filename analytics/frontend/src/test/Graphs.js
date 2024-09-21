@@ -57,7 +57,7 @@ const Graphs = ({ lineData }) => {
     }, [lineData]); // Re-run effect when lineData changes
 
     return (
-        <div className="p-4 border rounded-lg border-gray-300 h-full w-full">
+        <div className="p-4 border rounded-lg bg-[#fff] border-gray-300 h-full w-full">
             <canvas ref={chartRef} className="w-full h-full" />
         </div>
     );
