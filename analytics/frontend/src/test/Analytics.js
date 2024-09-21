@@ -15,6 +15,7 @@ function Analytics() {
   const [duration, setDuration] = useState('5m');
   const [category, setCategory] = useState('All');
   const [lineData, setLineData] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +36,14 @@ function Analytics() {
         if (lineResponse.data && lineResponse.data.salesData) {
           setSalesData(lineResponse.data.salesData);
         }
+      
+
+        let tp = 0;
+        lineResponse.data.productData.forEach((prod) => {
+          tp += prod.product_price;
+        })
+
+        setTotalPrice(tp);
   
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -103,7 +112,7 @@ function Analytics() {
         <Filters setDuration={setDuration} setCategory={setCategory} duration={duration} category={category} />
         <div className="flex flex-col flex-1 w-[80%]">
           <div className="flex flex-row justify-between h-[20%] w-[100%] rounded-lg p-6" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-            <ValueBox title="Value 1" value="100" />
+            <ValueBox title="Value 1" value={totalPrice} />
             <ValueBox title="Value 2" value="200" />
             <ValueBox title="Value 3" value="300" />
             <ValueBox title="Value 4" value="400" />
