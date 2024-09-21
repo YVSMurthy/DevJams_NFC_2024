@@ -1,0 +1,25 @@
+/* src/components/Navbar.css */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #92c0f4;
+  padding: 2vh 5vw;
+  color: white;
+  border-radius: 10px;
+}
+
+.navbar img{
+  width: 9vw;
+}
+.search-bar {
+  width: 30vw;
+  padding: 2vh;
+  border: none;
+  border-radius: 5px;
+  font-size: 2vh;
+}
+
+.search-bar:focus {
+  outline: none;
+}
