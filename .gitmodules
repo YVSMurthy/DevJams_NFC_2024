@@ -1,0 +1,3 @@
+[submodule "final_product_scanner"]
+	path = final_product_scanner
+	url = https://github.com/YVSMurthy/final_scanner_app.git
