@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const ValueBox = ({ value, title }) => {
   const [fetchedValue, setFetchedValue] = useState(value);
+  console.log("value : ",value)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,7 +21,7 @@ const ValueBox = ({ value, title }) => {
   return (
     <div className="flex flex-col p-4 bg-[#fff] rounded-xl w-[20%] h-full opacity-80">
       <h3 className="text-xl font-semibold">{title}</h3>
-      <p className="text-2xl">{fetchedValue}</p>
+      <p className="text-2xl">{value}</p>
     </div>
   );
 }
