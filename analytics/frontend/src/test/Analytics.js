@@ -39,23 +39,7 @@ function Analytics() {
           setSalesData(lineResponse.data.salesData);
         }
       
-
-        let tp = 0;
-        let tq = 0;
-        let tc = 0;
-        lineResponse.data.productData.forEach((prod) => {
-          tp += prod.product_price;
-        })
-        setTotalPrice(tp.toFixed(2));
-        lineResponse.data.productData.forEach((prod)=>{
-          tq += prod.product_quantity;
-        })
-        setTotalQuantity(tq);
-        lineResponse.data.productData.forEach((cogs)=>{
-          tc += cogs.product_cogs;
-        })
-        setTotalCogs(tc);
-
+        calculateTotalStats(lineResponse.data.productData); 
   
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -64,8 +48,21 @@ function Analytics() {
   
     fetchData();
   }, []);
+  function calculateTotalStats(filteredProducts) {
+    let tp = 0;
+    let tq = 0;
+    let tc = 0;
   
-
+    filteredProducts.forEach((prod) => {
+      tp += prod.product_price * prod.product_quantity;
+      tq += prod.product_quantity;
+      tc += prod.product_cogs * prod.product_quantity;  
+    });
+  
+    setTotalPrice(tp.toFixed(2));
+    setTotalQuantity(tq);
+    setTotalCogs(tc.toFixed(2));
+  }
   useEffect(() => {
     if (salesData.length > 0 && productData.length > 0) {
       console.log("Filter function");
@@ -100,21 +97,21 @@ function Analytics() {
       return product.product_type === category;
     }
   
+    let filteredProducts = [];
     let data = [];
   
     salesData.forEach((sale) => {
       const product = productData.find((p) => p.product_id === sale.product_id);
   
       if (product && filterByCategory(product) && filterByDuration(sale.sale_date)) {
-        data.push(
-          sale.sale_price
-        );
+        data.push(sale.sale_price);
+        filteredProducts.push(product);
       }
     });
   
-
     console.log("Filtered data:", data);
     setLineData(data);
+    calculateTotalStats(filteredProducts);
   }
 
   function formatNumber(num) {
@@ -127,7 +124,7 @@ function Analytics() {
     } else {
         return num.toString(); 
     }
-}
+  }
   
 
   return (
