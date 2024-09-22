@@ -7,7 +7,7 @@ import axios from 'axios';
 const backgroundImage = require('../assets/abstract_bg.png');
 
 function Analytics() {
-  const ip = '172.18.231.72'
+  const ip = '172.18.228.125'
   const [genderData, setGenderData] = useState({ labels: ['Male', 'Female'], data: [35, 47] });
   const [memberData, setMemberData] = useState({ labels: ['Customer', 'Employee'], data: [78, 53] });
   const [productData, setProductData] = useState([]);
@@ -15,7 +15,9 @@ function Analytics() {
   const [duration, setDuration] = useState('5m');
   const [category, setCategory] = useState('All');
   const [lineData, setLineData] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0)
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [totalQuantity, setTotalQuantity] = useState(0);
+  const [totalCogs , setTotalCogs] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +30,7 @@ function Analytics() {
         setMemberData({ labels: ['Customer', 'Employee'], data: memberResponse.data });
   
         const lineResponse = await axios.get(api + 'getSalesProductData');
-        console.log('API Response:', lineResponse.data);  // Log the entire response
+        console.log('API Response:', lineResponse.data); 
   
         if (lineResponse.data && lineResponse.data.productData) {
           setProductData(lineResponse.data.productData);
@@ -39,11 +41,21 @@ function Analytics() {
       
 
         let tp = 0;
+        let tq = 0;
+        let tc = 0;
         lineResponse.data.productData.forEach((prod) => {
           tp += prod.product_price;
         })
+        setTotalPrice(tp.toFixed(2));
+        lineResponse.data.productData.forEach((prod)=>{
+          tq += prod.product_quantity;
+        })
+        setTotalQuantity(tq);
+        lineResponse.data.productData.forEach((cogs)=>{
+          tc += cogs.product_cogs;
+        })
+        setTotalCogs(tc);
 
-        setTotalPrice(tp);
   
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -100,10 +112,22 @@ function Analytics() {
       }
     });
   
+
     console.log("Filtered data:", data);
     setLineData(data);
   }
-  
+
+  function formatNumber(num) {
+    if (num >= 1000000000) {
+        return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B'; 
+    } else if (num >= 1000000) {
+        return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'; 
+    } else if (num >= 1000) {
+        return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K'; 
+    } else {
+        return num.toString(); 
+    }
+}
   
 
   return (
@@ -112,10 +136,10 @@ function Analytics() {
         <Filters setDuration={setDuration} setCategory={setCategory} duration={duration} category={category} />
         <div className="flex flex-col flex-1 w-[80%]">
           <div className="flex flex-row justify-between h-[20%] w-[100%] rounded-lg p-6" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-            <ValueBox title="Value 1" value={totalPrice} />
-            <ValueBox title="Value 2" value="200" />
-            <ValueBox title="Value 3" value="300" />
-            <ValueBox title="Value 4" value="400" />
+            <ValueBox title="Total sales" value={formatNumber(totalPrice)} />
+            <ValueBox title="Quantity sold" value={formatNumber(totalQuantity)} />
+            <ValueBox title="Cogs" value={formatNumber(totalCogs)} />
+            <ValueBox title="Profit" value={formatNumber((totalPrice-totalCogs).toFixed(2))} />
           </div>
           <div className="flex flex-row h-[80%] w-full gap-6 mt-4">
             <Graphs lineData={lineData} duration={duration} />
